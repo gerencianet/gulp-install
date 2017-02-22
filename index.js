@@ -29,7 +29,7 @@ module.exports = exports = function install(opts) {
   return through2({
       objectMode: true
     },
-    function(file, enc, cb) {
+    function (file, enc, cb) {
       if (!file.path) {
         cb();
       }
@@ -43,7 +43,7 @@ module.exports = exports = function install(opts) {
           cmd.args.push('--ignore-scripts');
         }
         if (opts && opts.args) {
-          formatArguments(opts.args).forEach(function(arg) {
+          formatArguments(opts.args).forEach(function (arg) {
             cmd.args.push(arg);
           });
         }
@@ -53,6 +53,9 @@ module.exports = exports = function install(opts) {
         if (cmd.cmd === 'npm' && opts && opts.noOptional) {
           cmd.args.push('--no-optional');
         }
+        if (opts && opts.cmd) {
+          cmd.cmd = 'npm3';
+        }
 
         cmd.cwd = path.dirname(file.path);
         toRun.push(cmd);
@@ -60,7 +63,7 @@ module.exports = exports = function install(opts) {
       this.push(file);
       cb();
     },
-    function(cb) {
+    function (cb) {
       if (!toRun.length) {
         return cb();
       }
@@ -68,8 +71,8 @@ module.exports = exports = function install(opts) {
         log('Skipping install.', 'Run `' + gutil.colors.yellow(formatCommands(toRun)) + '` manually');
         return cb();
       } else {
-        toRun.forEach(function(command) {
-          commandRunner.run(command, function(err) {
+        toRun.forEach(function (command) {
+          commandRunner.run(command, function (err) {
             if (err) {
               log(err.message, ', run `' + gutil.colors.yellow(formatCommand(command)) + '` manually');
               return cb(err);
@@ -105,12 +108,12 @@ function formatCommand(command) {
 
 function formatArguments(args) {
   if (Array.isArray(args)) {
-    args.forEach(function(arg, index, arr) {
+    args.forEach(function (arg, index, arr) {
       arr[index] = formatArgument(arg);
     });
     return args;
   } else if (typeof args === 'string' || args instanceof String) {
-    return [ formatArgument(args) ];
+    return [formatArgument(args)];
   } else {
     log('Arguments are not passed in a valid format: ' + args);
     return [];
@@ -138,7 +141,7 @@ function clone(obj) {
     return obj.map(clone);
   } else if (typeof obj === 'object') {
     var copy = {};
-    Object.keys(obj).forEach(function(key) {
+    Object.keys(obj).forEach(function (key) {
       copy[key] = clone(obj[key]);
     });
     return copy;
